@@ -1,10 +1,10 @@
 package commonMain.connections
 
-import commonMain.operation.Operation
+import commonMain.operation.Receptor
 
 data class Connection(
-    val from: Operation,
-    val to: Operation,
+    val from: Receptor,
+    val to: Receptor,
     val inputIndex: Int,
     var signal: Boolean = false
 )
