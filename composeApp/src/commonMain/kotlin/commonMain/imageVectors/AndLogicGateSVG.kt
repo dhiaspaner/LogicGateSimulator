@@ -3,31 +3,39 @@ import androidx.compose.ui.graphics.Path
 
 
 val AndLogicGateSVG = Path().apply {
-            moveTo(105f, 105f)
-            verticalLineToRelative(302f)
-            horizontalLineToRelative(151f)
-            curveToRelative(148f, 0f, 148f, -302f, 0f, -302f)
-            lineTo(105f, 105f)
-            close()
-            moveTo(16f, 151f)
-            verticalLineToRelative(18f)
-            horizontalLineToRelative(71f)
-            verticalLineToRelative(-18f)
-            lineTo(16f, 151f)
-            close()
-            moveTo(384.8f, 247f)
-            curveToRelative(0.2f, 6f, 0.2f, 12f, 0f, 18f)
-            lineTo(496f, 265f)
-            verticalLineToRelative(-18f)
-            lineTo(384.8f, 247f)
-            close()
-            moveTo(16f, 343f)
-            verticalLineToRelative(18f)
-            horizontalLineToRelative(71f)
-            verticalLineToRelative(-18f)
-            lineTo(16f, 343f)
-            close()
-        }
+    // Main shape shifted by -105, -105
+
+    moveTo(0f, 0f)
+    verticalLineToRelative(302f)
+    horizontalLineToRelative(151f)
+    curveToRelative(148f, 0f, 148f, -302f, 0f, -302f)
+    lineTo(0f, 0f)
+    close()
+
+    // First small horizontal bar (was at y=151, now y=46)
+    moveTo(-89f, 46f)
+    verticalLineToRelative(18f)
+    horizontalLineToRelative(71f)
+    verticalLineToRelative(-18f)
+    lineTo(-89f, 46f)
+    close()
+
+    // Right side curve detail (was at y=247, now y=142)
+    moveTo(279.8f, 142f)
+    curveToRelative(0.2f, 6f, 0.2f, 12f, 0f, 18f)
+    lineTo(391f, 160f)
+    verticalLineToRelative(-18f)
+    lineTo(279.8f, 142f)
+    close()
+
+    // Bottom small horizontal bar (was at y=343, now y=238)
+    moveTo(-89f, 238f)
+    verticalLineToRelative(18f)
+    horizontalLineToRelative(71f)
+    verticalLineToRelative(-18f)
+    lineTo(-89f, 238f)
+    close()
+}
 
 
 fun Path.verticalLineToRelative(dy: Float): Path {

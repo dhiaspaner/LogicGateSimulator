@@ -3,6 +3,7 @@ package commonMain.imageVectors
 import androidx.compose.ui.graphics.Path
 
 val NotLogicGateSVG = Path().apply {
+
     moveTo(105f, 111.3f)
     lineTo(105f, 400.7f)
     lineTo(365.5f, 256f)

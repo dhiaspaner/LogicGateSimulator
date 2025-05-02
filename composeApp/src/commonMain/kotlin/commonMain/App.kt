@@ -6,9 +6,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFontFamilyResolver
+import commonMain.interactions.draggable
+import commonMain.interactions.rememberDrawableInteractionManager
 import commonMain.operation.AndOperation
 import commonMain.operation.ConstantVoltage
 import commonMain.operation.NotOperation
@@ -20,6 +23,7 @@ fun App() {
     MaterialTheme {
         val fontResolver = LocalFontFamilyResolver.current
         val density = LocalDensity.current
+
 
         val lowConstantVoltage = remember {
             ConstantVoltage(
@@ -61,27 +65,34 @@ fun App() {
             listOf(highConstantVoltage, lowConstantVoltage, notOperator, andOperation)
         }
 
-        // Create a drag and drop manager
-        val dragAndDropManager = rememberDragAndDropManager()
+        val drawableInteractionManager = rememberDrawableInteractionManager()
 
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
                 .draggable(
-                    dragAndDropManager = dragAndDropManager,
-                    onDragStart = { offset ->
-                        // Find the drawable at the clicked position and start dragging it
-                        findDrawableAt(graphics, offset)?.let { drawable ->
-                            dragAndDropManager.startDrag(drawable, offset)
-                        }.also {
-                            println("drawable: $it")
-                        }
-                    }
+                    drawableList = graphics,
+                    drawableInteractionManager = drawableInteractionManager
                 )
         ) {
+            drawableInteractionManager.updateUi
+
             graphics.forEach { drawable ->
                 drawable.draw(this)
+                drawable.drawBounds(this)
             }
+
+            drawContext.canvas.save()
+            drawRect(
+                color = Color.Red,
+                topLeft = drawableInteractionManager.hoverOffset,
+                size = Size(50f, 50f),
+                alpha = 0.5f
+            )
+            this.drawContext.canvas.restore()
+
+
+
         }
     }
 }

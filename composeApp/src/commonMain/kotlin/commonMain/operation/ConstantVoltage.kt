@@ -8,8 +8,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.AnnotatedString
@@ -27,19 +27,16 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.sp
 import commonMain.graphics.Style
 import commonMain.graphics.TextDrawable
+import commonMain.interactions.Interactable
 
 
 class ConstantVoltage(
     type: Type,
     density: Density,
     fontFamilyResolver: FontFamily.Resolver,
-) : OutputType.SingleSignal, TextDrawable {
+) : OutputType.SingleSignal, TextDrawable, Interactable.Clickable{
 
-    override var text: String =
-        when (type) {
-            Type.HIGH -> "1"
-            Type.LOW -> "0"
-        }
+    override var text: String by mutableStateOf(value = if (type == Type.HIGH) "1" else "0")
 
     override var fontSize: Float by mutableStateOf(value = 16f)
     override var color: Color by mutableStateOf(value = Color.Black)
@@ -60,6 +57,10 @@ class ConstantVoltage(
 
 
     var type: Type = type
+        set(value) {
+            updateTextByType(value)
+            field = value
+        }
 
     override val outputSignal: Boolean
         get() = operate()
@@ -75,7 +76,6 @@ class ConstantVoltage(
 
     override val matrix: Matrix by mutableStateOf(value = Matrix())
     override var size: Size by mutableStateOf(value = Size(50f, 50f))
-
     override var style: Style by mutableStateOf(
         value = Style(
             fillColor = Color.Black,
@@ -83,6 +83,7 @@ class ConstantVoltage(
             strokeWidth = 1f
         )
     )
+    override val path = Path()
 
     fun createTextLayout(density: Density, fontFamilyResolver: FontFamily.Resolver): TextLayoutResult {
         val text = "1"
@@ -143,6 +144,22 @@ class ConstantVoltage(
             )
         }
     }
+
+    override fun onClick(offset: Offset) {
+        type = when (type) {
+            Type.HIGH -> Type.LOW
+            Type.LOW -> Type.HIGH
+        }
+    }
+
+    private fun updateTextByType(type: Type = this.type)  {
+        text =  when (type) {
+            Type.HIGH -> "1"
+            Type.LOW -> "0"
+        }
+
+    }
+
 
 
 }
