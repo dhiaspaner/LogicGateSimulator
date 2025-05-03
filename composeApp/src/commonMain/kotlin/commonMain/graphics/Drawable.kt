@@ -7,7 +7,8 @@ import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import commonMain.interactions.Interactable
+import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.text.TextLayoutResult
 
 interface Drawable  {
 
@@ -24,7 +25,6 @@ interface Drawable  {
         }
 
     fun drawLocal(drawScope: DrawScope) {
-
         drawScope.drawPath(
             path,
             style = Stroke(width = style.strokeWidth),
@@ -34,22 +34,24 @@ interface Drawable  {
 
 
     fun draw(drawScope: DrawScope) {
-        drawInLocalSpace(drawScope) {
+        applyTransformationMatrix(drawScope) {
             drawLocal(drawScope)
         }
     }
 
-    fun drawInLocalSpace(drawScope: DrawScope, onDraw: DrawScope.() -> Unit) {
-        with(drawScope.drawContext.canvas) {
-            save()
-            concat(matrix)
-            onDraw(drawScope)
-            restore()
-        }
+    fun applyTransformationMatrix(drawScope: DrawScope, onDraw: DrawScope.() -> Unit) {
+        drawScope.withTransform(
+            transformBlock =  {
+                transform(matrix)
+            } ,
+            drawBlock = {
+                onDraw()
+            }
+        )
     }
 
     fun drawBounds(drawScope: DrawScope) {
-        drawInLocalSpace(drawScope) {
+        applyTransformationMatrix(drawScope) {
             drawContext.canvas.drawRect(
                 rect = path.getBounds(),
                 paint = androidx.compose.ui.graphics.Paint().apply {
@@ -64,11 +66,7 @@ interface Drawable  {
 
     fun Path.alignTopLeftMatrix() {
         val bounds = this.getBounds()
-        matrix.apply {
-            reset()
-            translate(-bounds.left, -bounds.top)
-        }
-        transform(matrix)
+        matrix.translate(-bounds.left, -bounds.top)
     }
 
 
@@ -82,36 +80,22 @@ interface Drawable  {
 
     fun rotateBy(angleX: Float, angleY: Float, angleZ: Float) {
         matrix.apply {
-            reset()
             rotateX(angleX)
             rotateY(angleY)
             rotateZ(angleZ)
         }
-        path.transform(matrix)
     }
 
     fun scaleBy(scaleX: Float, scaleY: Float) {
-        matrix.apply {
-            reset()
-            scale(scaleX, scaleY)
-        }
-        path.transform(matrix)
+        matrix.scale(scaleX, scaleY)
     }
 
     fun scaleBy(scale: Float) {
-        matrix.apply {
-            reset()
-            scale(scale, scale)
-        }
-        path.transform(matrix)
+        matrix.scale(scale, scale)
     }
 
     fun translateBy(offset: Offset) {
-        matrix.apply {
-            reset()
-            translate(offset.x, offset.y)
-        }
-        path.transform(matrix)
+        matrix.translate(offset.x, offset.y)
     }
 
 }

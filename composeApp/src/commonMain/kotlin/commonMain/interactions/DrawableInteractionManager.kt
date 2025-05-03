@@ -1,6 +1,7 @@
 package commonMain.interactions
 
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -68,7 +69,7 @@ class DrawableInteractionManager {
 
     fun onDrag(offset: Offset) {
         val change = offset - dragOffset
-        print("change $change")
+
         selectedDrawings.forEach {
 
             it.translateBy(offset = change)
@@ -147,3 +148,24 @@ fun Modifier.draggable(
         }
     }
 }
+
+@Composable
+fun Modifier.clickable(
+    drawableList: List<Drawable>,
+    drawableInteractionManager: DrawableInteractionManager,
+    onClick: (Offset) -> Unit = {},
+    enabled: Boolean = true
+): Modifier {
+    return this.pointerInput(enabled) {
+        if (enabled) {
+            detectTapGestures(
+                onTap = { offset ->
+                    // Handle click
+                    drawableInteractionManager.onClick(offset, drawableList)
+                    onClick(offset)
+                }
+            )
+        }
+    }
+}
+
